@@ -1,0 +1,110 @@
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+
+@layer base {
+  body {
+    @apply bg-black text-slate-100 font-sans antialiased selection:bg-[#C3F53B] selection:text-black min-h-screen overflow-x-hidden;
+    
+  }
+}
+
+/* ── Matte Cards ─ Pure Black Theme ──────────────────── */
+.matte-card {
+  background: #0D0D0D;
+  border: 1px solid #1A1A1A;
+  border-radius: 20px;
+}
+
+.matte-card-hover {
+  transition: all 0.2s ease-in-out;
+}
+
+.matte-card-hover:hover {
+  border-color: #2A2A2A;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px -10px rgba(0, 0, 0, 0.9);
+}
+
+/* glass-panel alias (same style) */
+.glass-panel {
+  background: #0D0D0D;
+  border: 1px solid #1A1A1A;
+  border-radius: 20px;
+}
+
+.glass-panel-hover {
+  transition: all 0.25s ease-in-out;
+}
+
+.glass-panel-hover:hover {
+  border-color: rgba(195, 245, 59, 0.25);
+  box-shadow: 0 0 20px -5px rgba(195, 245, 59, 0.12);
+  transform: translateY(-2px);
+}
+
+/* ── Glow utilities ──────────────────────────────────── */
+.glow-lime {
+  box-shadow: 0 0 15px rgba(195, 245, 59, 0.3);
+}
+
+.glow-orange {
+  box-shadow: 0 0 15px rgba(255, 140, 0, 0.3);
+}
+
+.glow-blue {
+  box-shadow: 0 0 15px rgba(59, 130, 246, 0.3);
+}
+
+.glow-green {
+  box-shadow: 0 0 15px rgba(34, 197, 94, 0.3);
+}
+
+.glow-red {
+  box-shadow: 0 0 15px rgba(239, 68, 68, 0.3);
+}
+
+.glow-purple {
+  box-shadow: 0 0 15px rgba(139, 92, 246, 0.3);
+}
+
+/* ── Scrollbar ───────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: #000000;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1A1A1A;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #C3F53B;
+}
+
+/* ── Pulse animation ─────────────────────────────────── */
+@keyframes pingSlow {
+  0% {
+    transform: scale(0.95);
+    opacity: 0.8;
+  }
+
+  50% {
+    transform: scale(1.15);
+    opacity: 0.4;
+  }
+
+  100% {
+    transform: scale(0.95);
+    opacity: 0.8;
+  }
+}
+
+.animate-pulse-slow {
+  animation: pingSlow 3s infinite ease-in-out;
+}
