@@ -203,12 +203,6 @@ export default function StudentTable({ limit }) {
                       <span className="font-medium text-slate-200 block truncate max-w-[180px]">
                         {student.assignedTask}
                       </span>
-                      <span className={`inline-block text-[9px] px-1.5 py-0.5 rounded font-semibold uppercase ${student.difficulty === 'Hard' ? 'bg-red-500/10 text-red-400' :
-                        student.difficulty === 'Medium' ? 'bg-amber-500/10 text-amber-400' :
-                          'bg-emerald-500/10 text-emerald-400'
-                        }`}>
-                        {student.difficulty}
-                      </span>
                     </td>
 
                     {/* Status */}

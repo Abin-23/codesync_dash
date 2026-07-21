@@ -3,8 +3,7 @@ import { useLiveData } from '../context/LiveDataContext';
 import { Settings, Moon, Bell, RefreshCw, Sliders } from 'lucide-react';
 
 export default function SettingsPage() {
-  const { isLiveUpdating, setIsLiveUpdating, updateIntervalMs, setUpdateIntervalMs } = useLiveData();
-  const [themeDark, setThemeDark] = useState(true);
+  const { isLiveUpdating, setIsLiveUpdating, updateIntervalMs, setUpdateIntervalMs, isDarkMode, setIsDarkMode } = useLiveData();
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
 
   return (
@@ -28,14 +27,14 @@ export default function SettingsPage() {
             </div>
             <div>
               <h3 className="text-sm font-bold text-slate-200">Dark Theme Mode</h3>
-              <p className="text-xs text-slate-400">Hackathon Control Center high-contrast dark aesthetic (#0B1120)</p>
+              <p className="text-xs text-slate-400">CodeSync Control Center high-contrast dark aesthetic (#0B1120)</p>
             </div>
           </div>
           <button
-            onClick={() => setThemeDark(!themeDark)}
-            className={`w-12 h-6 rounded-full transition-colors relative p-1 ${themeDark ? 'bg-blue-600' : 'bg-slate-700'}`}
+            onClick={() => setIsDarkMode(!isDarkMode)}
+            className={`w-12 h-6 rounded-full transition-colors relative p-1 ${isDarkMode ? 'bg-blue-600' : 'bg-slate-700'}`}
           >
-            <div className={`w-4 h-4 rounded-full bg-white transition-transform ${themeDark ? 'translate-x-6' : 'translate-x-0'}`} />
+            <div className={`w-4 h-4 rounded-full bg-white transition-transform ${isDarkMode ? 'translate-x-6' : 'translate-x-0'}`} />
           </button>
         </div>
 
@@ -65,8 +64,8 @@ export default function SettingsPage() {
               <RefreshCw className={`w-5 h-5 ${isLiveUpdating ? 'animate-spin' : ''}`} />
             </div>
             <div>
-              <h3 className="text-sm font-bold text-slate-200">Auto Live Simulation Engine</h3>
-              <p className="text-xs text-slate-400">Simulate real-time student activity feed and countdown timers</p>
+              <h3 className="text-sm font-bold text-slate-200">Real-time Firebase Listener</h3>
+              <p className="text-xs text-slate-400">Stream real-time student evaluation and submission events from Firebase RTDB</p>
             </div>
           </div>
           <button
@@ -84,8 +83,8 @@ export default function SettingsPage() {
               <Sliders className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-sm font-bold text-slate-200">Refresh Interval Dropdown</h3>
-              <p className="text-xs text-slate-400">Control frequency of mock socket state updates</p>
+              <h3 className="text-sm font-bold text-slate-200">Polling & Sync Interval</h3>
+              <p className="text-xs text-slate-400">Control synchronization cadence for secondary background checkers</p>
             </div>
           </div>
           <select

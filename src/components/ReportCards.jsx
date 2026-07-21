@@ -17,7 +17,7 @@ export default function ReportCards() {
   const reports = [
     { title: "Export CSV Data", desc: "Raw student scores & test metrics", icon: FileSpreadsheet, type: "CSV Export", border: "border-[#C3F53B]/40" },
     { title: "Export Excel Workbook", desc: "Formatted spreadsheets with pivot tabs", icon: FileSpreadsheet, type: "Excel File", border: "border-[#FF8C00]/40" },
-    { title: "Generate PDF Audit", desc: "Official hackathon evaluation summary", icon: FileText, type: "PDF Audit Report", border: "border-white/40" },
+    { title: "Generate PDF Audit", desc: "Official CodeSync evaluation summary", icon: FileText, type: "PDF Audit Report", border: "border-white/40" },
     { title: "Download Full Report", desc: "Complete ZIP package with source logs", icon: Download, type: "ZIP Archive", border: "border-[#222226]" }
   ];
 

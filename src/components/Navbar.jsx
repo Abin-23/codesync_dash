@@ -6,11 +6,13 @@ import {
   Clock,
   Menu,
   Radio,
-  SlidersHorizontal
+  SlidersHorizontal,
+  Sun,
+  Moon
 } from 'lucide-react';
 
 export default function Navbar({ onToggleMobileSidebar, onToggleNotifications }) {
-  const { searchTerm, setSearchTerm, notifications } = useLiveData();
+  const { searchTerm, setSearchTerm, notifications, isDarkMode, setIsDarkMode } = useLiveData();
   const [currentTime, setCurrentTime] = useState(new Date());
 
   useEffect(() => {
@@ -21,7 +23,9 @@ export default function Navbar({ onToggleMobileSidebar, onToggleNotifications })
   const unreadCount = notifications.filter(n => n.unread).length;
 
   return (
-    <header className="sticky top-0 z-30 h-16 bg-black border-b border-[#1A1A1A] px-4 lg:px-6 flex items-center justify-between gap-4">
+    <header className={`sticky top-0 z-30 h-16 border-b px-4 lg:px-6 flex items-center justify-between gap-4 transition-colors duration-300 ${
+      isDarkMode ? 'bg-black border-[#1A1A1A]' : 'bg-white/95 backdrop-blur-md border-slate-200 shadow-sm'
+    }`}>
       {/* Left section: Mobile menu & Search */}
       <div className="flex items-center gap-3 flex-1 max-w-xl">
         <button
@@ -65,6 +69,38 @@ export default function Navbar({ onToggleMobileSidebar, onToggleNotifications })
         <div className="hidden md:flex items-center gap-1.5 px-3.5 py-1.5 rounded-2xl bg-[#0D0D0D] border border-[#1A1A1A] text-white font-mono text-xs font-bold">
           <Clock className="w-3.5 h-3.5 text-[#C3F53B]" />
           <span>{currentTime.toLocaleTimeString()}</span>
+        </div>
+
+        {/* Global Website Theme Switcher */}
+        <div className={`flex items-center p-1 rounded-2xl border transition-all ${
+          isDarkMode 
+            ? 'bg-[#111111] border-[#1A1A1A] text-slate-300' 
+            : 'bg-slate-100 border-slate-300 shadow-sm text-slate-700'
+        }`}>
+          <button
+            onClick={() => setIsDarkMode(true)}
+            className={`flex items-center gap-1 px-3 py-1 rounded-xl text-xs font-bold transition-all ${
+              isDarkMode 
+                ? 'bg-blue-600 text-white shadow-md shadow-blue-600/30 scale-105' 
+                : 'hover:text-slate-900'
+            }`}
+            title="Dark Theme Mode"
+          >
+            <Moon className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline font-mono">Dark</span>
+          </button>
+          <button
+            onClick={() => setIsDarkMode(false)}
+            className={`flex items-center gap-1 px-3 py-1 rounded-xl text-xs font-bold transition-all ${
+              !isDarkMode 
+                ? 'bg-amber-500 text-slate-950 shadow-md shadow-amber-500/30 font-black scale-105' 
+                : 'hover:text-slate-200'
+            }`}
+            title="Light Theme Mode"
+          >
+            <Sun className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline font-mono">Light</span>
+          </button>
         </div>
 
         {/* Notifications Bell */}

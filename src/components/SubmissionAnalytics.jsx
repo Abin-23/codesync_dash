@@ -2,21 +2,36 @@ import React from 'react';
 import { useLiveData } from '../context/LiveDataContext';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 
-const mockSubmissionTimeline = [
-  { time: '10:00 AM', submissions: 0, cumulative: 0 },
-  { time: '10:15 AM', submissions: 2, cumulative: 2 },
-  { time: '10:30 AM', submissions: 5, cumulative: 7 },
-  { time: '10:45 AM', submissions: 12, cumulative: 19 },
-  { time: '11:00 AM', submissions: 8, cumulative: 27 },
-  { time: '11:15 AM', submissions: 15, cumulative: 42 },
-];
-
 export default function SubmissionAnalytics() {
-  const { students } = useLiveData();
+  const { students, activities } = useLiveData();
 
   const totalSubmitted = students.filter(s => s.submissionStatus === 'Submitted').length;
   const pending = students.filter(s => s.submissionStatus === 'Pending').length;
   const late = students.filter(s => s.submissionStatus === 'Late').length;
+
+  // Compute real average duration from Firebase submissions
+  const allSubs = students.flatMap(s => s.userSubmissions || []);
+  const avgSeconds = allSubs.length > 0 ? Math.round(allSubs.reduce((sum, s) => sum + (s.durationSeconds || 0), 0) / allSubs.length) : 0;
+  const avgTimeFormatted = avgSeconds > 0 ? `${Math.floor(avgSeconds / 60)}m ${avgSeconds % 60}s` : 'N/A';
+
+  // Build dynamic chart timeline from real activities / submissions
+  const submissionTimeline = [];
+  let cumulativeCount = 0;
+  const sortedSubs = [...allSubs].sort((a, b) => (a.submittedAt || 0) - (b.submittedAt || 0));
+  
+  if (sortedSubs.length === 0) {
+    submissionTimeline.push({ time: 'Start', submissions: 0, cumulative: 0 });
+  } else {
+    sortedSubs.forEach(sub => {
+      cumulativeCount += 1;
+      const timeLabel = sub.submittedAtISO ? new Date(sub.submittedAtISO).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Recent';
+      submissionTimeline.push({
+        time: timeLabel,
+        submissions: 1,
+        cumulative: cumulativeCount
+      });
+    });
+  }
 
   return (
     <div className="space-y-4">
@@ -36,7 +51,7 @@ export default function SubmissionAnalytics() {
         </div>
         <div className="p-4 matte-card">
           <p className="text-xs font-semibold text-slate-400 font-mono">Avg Submission Time</p>
-          <p className="text-2xl font-black text-white font-mono mt-1">42m 10s</p>
+          <p className="text-2xl font-black text-white font-mono mt-1">{avgTimeFormatted}</p>
         </div>
       </div>
 
@@ -51,7 +66,7 @@ export default function SubmissionAnalytics() {
 
         <div className="h-64 w-full">
           <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={mockSubmissionTimeline}>
+            <AreaChart data={submissionTimeline}>
               <defs>
                 <linearGradient id="submissionGradient" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor="#C3F53B" stopOpacity={0.4}/>

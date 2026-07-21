@@ -1,20 +1,152 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { initialStudents, initialActivities } from '../data/students';
+import { rtdb } from '../config/firebase';
+import { ref, onValue } from 'firebase/database';
 
 const LiveDataContext = createContext();
 
 export const LiveDataProvider = ({ children }) => {
-  const [students, setStudents] = useState(initialStudents);
-  const [activities, setActivities] = useState(initialActivities);
+  const [students, setStudents] = useState([]);
+  const [activities, setActivities] = useState([]);
+
+  // Connect to Firebase Realtime Database (`/status/users` and `/logs/all_submissions`)
+  useEffect(() => {
+    if (!rtdb) return;
+
+    const statusRef = ref(rtdb, 'status/users');
+    const submissionsRef = ref(rtdb, 'logs/all_submissions');
+
+    let currentStatusUsers = {};
+    let currentSubmissions = {};
+
+    const updateCombinedData = () => {
+      const uids = new Set([...Object.keys(currentStatusUsers), ...Object.keys(currentSubmissions.byUid || {})]);
+      if (uids.size === 0) return;
+
+      const realStudents = [];
+      const realActivities = [];
+
+      // Build real activities from all_submissions
+      const subsArray = Object.values(currentSubmissions.raw || {}).sort((a, b) => (b.submittedAt || 0) - (a.submittedAt || 0));
+      subsArray.forEach(sub => {
+        const timeStr = sub.submittedAtISO ? new Date(sub.submittedAtISO).toLocaleTimeString() : 'Recent';
+        realActivities.push({
+          id: sub.id || Date.now() + Math.random(),
+          text: `${sub.displayName || 'Student'} submitted ${sub.fileName || 'repository'} (${sub.taskId || 'Task'})`,
+          time: timeStr,
+          type: 'submit',
+          iconColor: 'text-emerald-400',
+          r2Url: sub.r2Url,
+          fileName: sub.fileName
+        });
+      });
+
+      const realNotifications = subsArray.slice(0, 10).map((sub, i) => ({
+        id: sub.id || i,
+        title: "Submission Received",
+        message: `${sub.displayName || 'Student'} pushed ${sub.fileName || 'archive'} (${sub.taskId || 'Task'})`,
+        time: sub.submittedAtISO ? new Date(sub.submittedAtISO).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Recent',
+        unread: i < 3,
+        severity: "success"
+      }));
+
+      // Build real students from status/users + all_submissions
+      uids.forEach(uid => {
+        const statusUser = currentStatusUsers[uid] || {};
+        const userSubs = subsArray.filter(s => s.uid === uid);
+        const latestSub = userSubs[0] || {};
+
+        const displayName = statusUser.displayName || latestSub.displayName || "Unknown Student";
+        const email = statusUser.email || latestSub.email || "N/A";
+        const avatar = statusUser.photoURL || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80";
+        const hasSubmitted = statusUser.hasSubmitted || userSubs.length > 0;
+        const isOnline = statusUser.isOnline;
+        const statusStr = hasSubmitted ? "Submitted" : (isOnline ? "Coding" : "Offline");
+        const progressVal = hasSubmitted ? 100 : (isOnline ? 75 : 0);
+
+        realStudents.push({
+          id: uid,
+          name: displayName,
+          email: email,
+          avatar: avatar,
+          loginTime: statusUser.lastActive ? new Date(statusUser.lastActive).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "N/A",
+          assignedTask: latestSub.taskId || "Distributed Key-Value Store",
+          difficulty: "Hard",
+          status: statusStr,
+          timerRemaining: latestSub.durationSeconds || (isOnline ? 1200 : 0),
+          progress: progressVal,
+          unitTestStarted: isOnline || hasSubmitted,
+          unitTestPassed: hasSubmitted ? "15/15" : (isOnline ? "10/15" : "0/15"),
+          integrationStarted: hasSubmitted,
+          integrationPassed: hasSubmitted ? "8/8" : "0/8",
+          buildStatus: hasSubmitted ? "Successful" : (isOnline ? "In Progress" : "Pending"),
+          deploymentStatus: statusUser.lastSubmissionUrl || latestSub.r2Url ? "Live" : "Not Started",
+          submissionStatus: hasSubmitted ? "Submitted" : "Pending",
+          completionPercentage: progressVal,
+          score: hasSubmitted ? 96 : (isOnline ? 75 : 0),
+          liveUrl: statusUser.lastSubmissionUrl || latestSub.r2Url || "",
+          lastSubmissionFile: statusUser.lastSubmissionFile || latestSub.fileName || "",
+          submissionsCount: userSubs.length,
+          userSubmissions: userSubs,
+          logs: [
+            `[INFO] User ${displayName} authenticated into system.`,
+            isOnline ? `[SYSTEM] Heartbeat active (last active: ${new Date(statusUser.lastActive || Date.now()).toLocaleTimeString()}).` : `[SYSTEM] User offline.`,
+            hasSubmitted ? `[SUBMIT] Uploaded archive ${statusUser.lastSubmissionFile || latestSub.fileName} to R2 storage.` : `[INFO] Awaiting submission push.`
+          ]
+        });
+      });
+
+      setStudents(realStudents);
+      setActivities(realActivities);
+      setNotifications(realNotifications);
+    };
+
+    const unsubStatus = onValue(statusRef, (snapshot) => {
+      currentStatusUsers = snapshot.val() || {};
+      updateCombinedData();
+    }, (error) => {
+      console.error("Firebase RTDB status error:", error);
+    });
+
+    const unsubSubmissions = onValue(submissionsRef, (snapshot) => {
+      const raw = snapshot.val() || {};
+      const byUid = {};
+      Object.values(raw).forEach(sub => {
+        if (sub && sub.uid) {
+          byUid[sub.uid] = byUid[sub.uid] || [];
+          byUid[sub.uid].push(sub);
+        }
+      });
+      currentSubmissions = { raw, byUid };
+      updateCombinedData();
+    }, (error) => {
+      console.error("Firebase RTDB submissions error:", error);
+    });
+
+    return () => {
+      unsubStatus();
+      unsubSubmissions();
+    };
+  }, []);
   const [isLiveUpdating, setIsLiveUpdating] = useState(true);
   const [updateIntervalMs, setUpdateIntervalMs] = useState(3000);
-  const [notifications, setNotifications] = useState([
-    { id: 1, title: "Build Failed", message: "David Kim's build encountered a segfault", time: "2m ago", unread: true, severity: "danger" },
-    { id: 2, title: "Submission Received", message: "Alex Rivera submitted Key-Value Store solution", time: "4m ago", unread: true, severity: "success" },
-    { id: 3, title: "Timer Expired", message: "3 student coding sessions reaching final 5 mins", time: "10m ago", unread: false, severity: "warning" },
-    { id: 4, title: "Testing Completed", message: "Hanna Schmidt passed all 15 unit tests", time: "12m ago", unread: false, severity: "info" },
-    { id: 5, title: "Deployment Successful", message: "Aisha Patel web app live at eval-app-006", time: "18m ago", unread: false, severity: "success" },
-  ]);
+  const [isDarkMode, setIsDarkMode] = useState(true);
+
+  // Sync isDarkMode with document root classes for global theme styling
+  useEffect(() => {
+    if (isDarkMode) {
+      document.documentElement.classList.add('dark');
+      document.documentElement.classList.remove('light');
+      document.body.classList.add('dark');
+      document.body.classList.remove('light');
+    } else {
+      document.documentElement.classList.add('light');
+      document.documentElement.classList.remove('dark');
+      document.body.classList.add('light');
+      document.body.classList.remove('dark');
+    }
+  }, [isDarkMode]);
+
+  const [notifications, setNotifications] = useState([]);
 
   // Selected student for inspect / evaluate modal
   const [selectedStudentModal, setSelectedStudentModal] = useState(null);
@@ -29,63 +161,7 @@ export const LiveDataProvider = ({ children }) => {
   const [testingFilter, setTestingFilter] = useState('All');
   const [sortBy, setSortBy] = useState('name');
 
-  // Real-time ticking effect
-  useEffect(() => {
-    if (!isLiveUpdating) return;
 
-    const interval = setInterval(() => {
-      // 1. Decrement timers for active coding/testing students
-      setStudents(prevStudents => {
-        return prevStudents.map(student => {
-          if (student.status === "Coding" || student.status === "Testing") {
-            const nextTimer = Math.max(0, student.timerRemaining - 3);
-            let nextProgress = student.progress;
-            let nextStatus = student.status;
-            
-            // Randomly increase progress slightly
-            if (Math.random() > 0.6 && nextProgress < 95) {
-              nextProgress = Math.min(95, nextProgress + Math.floor(Math.random() * 4) + 1);
-            }
-
-            // Transition from Coding to Testing if progress high
-            if (nextProgress > 75 && nextStatus === "Coding" && Math.random() > 0.7) {
-              nextStatus = "Testing";
-            }
-
-            return {
-              ...student,
-              timerRemaining: nextTimer,
-              progress: nextProgress,
-              completionPercentage: nextProgress,
-              status: nextStatus
-            };
-          }
-          return student;
-        });
-      });
-
-      // 2. Randomly trigger a live event every 2 cycles (~6 seconds)
-      if (Math.random() > 0.4) {
-        const randomNames = ["Sarah Chen", "Marcus Vance", "Elena Rostova", "David Kim", "Maya Lin", "Carlos Mendez"];
-        const randomName = randomNames[Math.floor(Math.random() * randomNames.length)];
-        const eventTypes = [
-          { text: `${randomName} passed Unit Test suite`, type: "test", iconColor: "text-blue-400" },
-          { text: `${randomName} pushed code updates`, type: "code", iconColor: "text-purple-400" },
-          { text: `${randomName} triggered deployment preview`, type: "deploy", iconColor: "text-emerald-400" },
-          { text: `Heartbeat ping from ${randomName}'s workspace`, type: "system", iconColor: "text-slate-400" },
-        ];
-        const randomEvent = eventTypes[Math.floor(Math.random() * eventTypes.length)];
-
-        setActivities(prev => [
-          { id: Date.now(), text: randomEvent.text, time: "Just now", type: randomEvent.type, iconColor: randomEvent.iconColor },
-          ...prev.slice(0, 15)
-        ]);
-      }
-
-    }, updateIntervalMs);
-
-    return () => clearInterval(interval);
-  }, [isLiveUpdating, updateIntervalMs]);
 
   // Derived KPI metrics
   const totalStudents = students.length;
@@ -102,9 +178,9 @@ export const LiveDataProvider = ({ children }) => {
   const successfulDeployments = students.filter(s => s.deploymentStatus === "Live").length;
   const failedBuilds = students.filter(s => s.buildStatus === "Failed").length;
   
-  const overallCompletionPercentage = Math.round(
-    students.reduce((acc, curr) => acc + curr.completionPercentage, 0) / totalStudents
-  );
+  const overallCompletionPercentage = totalStudents > 0 ? Math.round(
+    students.reduce((acc, curr) => acc + (curr.completionPercentage || 0), 0) / totalStudents
+  ) : 0;
 
   return (
     <LiveDataContext.Provider value={{
@@ -115,6 +191,8 @@ export const LiveDataProvider = ({ children }) => {
       setIsLiveUpdating,
       updateIntervalMs,
       setUpdateIntervalMs,
+      isDarkMode,
+      setIsDarkMode,
       notifications,
       setNotifications,
       selectedStudentModal,

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { LiveDataProvider } from './context/LiveDataContext';
+import { LiveDataProvider, useLiveData } from './context/LiveDataContext';
 import Sidebar from './components/Sidebar';
 import Navbar from './components/Navbar';
 import RightPanel from './components/RightPanel';
@@ -14,13 +14,17 @@ import StudentsPage from './pages/StudentsPage';
 import SubmissionsPage from './pages/SubmissionsPage';
 import ReportsPage from './pages/ReportsPage';
 import SettingsPage from './pages/SettingsPage';
+import LogsPage from './pages/LogsPage';
 
 function AppContent() {
+  const { isDarkMode } = useLiveData();
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-[#0D0D0D] text-slate-100 flex flex-col font-sans selection:bg-blue-500 selection:text-white">
+    <div className={`min-h-screen transition-colors duration-300 flex flex-col font-sans selection:bg-blue-500 selection:text-white ${
+      isDarkMode ? 'bg-[#0D0D0D] text-slate-100' : 'bg-slate-50 text-slate-900'
+    }`}>
       {/* Sidebar Component */}
       <Sidebar
         isMobileOpen={isMobileSidebarOpen}
@@ -52,6 +56,7 @@ function AppContent() {
               <Route path="/" element={<Dashboard />} />
               <Route path="/students" element={<StudentsPage />} />
               <Route path="/submissions" element={<SubmissionsPage />} />
+              <Route path="/logs" element={<LogsPage />} />
               <Route path="/reports" element={<ReportsPage />} />
               <Route path="/settings" element={<SettingsPage />} />
             </Routes>

@@ -20,7 +20,7 @@ export default function Leaderboard() {
             <Trophy className="w-5 h-5" />
           </div>
           <div>
-            <h3 className="text-base font-bold text-slate-100">Live Hackathon Leaderboard</h3>
+            <h3 className="text-base font-bold text-slate-100">Live CodeSync Leaderboard</h3>
             <p className="text-xs text-slate-400">Top performers evaluated by test passing rate & execution speed</p>
           </div>
         </div>

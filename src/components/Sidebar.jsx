@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
+import { useLiveData } from '../context/LiveDataContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   LayoutDashboard,
@@ -22,12 +23,13 @@ const menuItems = [
   { name: 'Dashboard', path: '/', icon: LayoutDashboard },
   { name: 'Students', path: '/students', icon: Users },
   { name: 'Submissions', path: '/submissions', icon: FileCheck },
-
+  { name: 'Logs History', path: '/logs', icon: Terminal },
   { name: 'Reports', path: '/reports', icon: FileSpreadsheet },
   { name: 'Settings', path: '/settings', icon: Settings },
 ];
 
 export default function Sidebar({ isMobileOpen, setIsMobileOpen }) {
+  const { isDarkMode } = useLiveData();
   const [collapsed, setCollapsed] = useState(false);
   const location = useLocation();
 
@@ -48,12 +50,16 @@ export default function Sidebar({ isMobileOpen, setIsMobileOpen }) {
 
       {/* Sidebar Container */}
       <motion.aside
-        className={`fixed top-0 left-0 bottom-0 z-50 flex flex-col bg-black border-r border-[#1A1A1A] transition-all duration-300 ${
+        className={`fixed top-0 left-0 bottom-0 z-50 flex flex-col transition-all duration-300 ${
           collapsed ? 'w-20' : 'w-64'
-        } ${isMobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}
+        } ${isMobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'} ${
+          isDarkMode ? 'bg-black border-r border-[#1A1A1A]' : 'bg-white border-r border-slate-200 shadow-xl'
+        }`}
       >
         {/* Header / Logo */}
-        <div className="h-16 flex items-center justify-between px-4 border-b border-[#1A1A1A]">
+        <div className={`h-16 flex items-center justify-between px-4 border-b ${
+          isDarkMode ? 'border-[#1A1A1A]' : 'border-slate-200'
+        }`}>
           <div className="flex items-center gap-3 overflow-hidden">
             <div className="relative p-2 rounded-xl bg-[#111111] text-[#C3F53B] border border-[#1A1A1A] shadow-md">
               <Terminal className="w-5 h-5" />
@@ -68,11 +74,13 @@ export default function Sidebar({ isMobileOpen, setIsMobileOpen }) {
                 animate={{ opacity: 1, x: 0 }}
                 className="flex flex-col"
               >
-                <span className="font-extrabold text-white tracking-wider text-base uppercase font-mono">
-                  HackEval <span className="text-[#C3F53B]">OS</span>
+                <span className={`font-extrabold tracking-wider text-base uppercase font-mono ${
+                  isDarkMode ? 'text-white' : 'text-slate-900'
+                }`}>
+                  Code<span className="text-[#C3F53B]">Sync</span>
                 </span>
                 <span className="text-[10px] uppercase tracking-wider text-slate-400 font-semibold flex items-center gap-1 font-mono">
-                  <Zap className="w-2.5 h-2.5 text-[#FF8C00]" /> Control Center
+                  <Zap className="w-2.5 h-2.5 text-[#FF8C00]" /> Live Platform
                 </span>
               </motion.div>
             )}
@@ -103,11 +111,13 @@ export default function Sidebar({ isMobileOpen, setIsMobileOpen }) {
                   `relative flex items-center gap-3 px-3.5 py-2.5 rounded-2xl font-bold text-xs transition-all duration-200 ${
                     isActive
                       ? 'bg-[#C3F53B] text-black shadow-lg shadow-[#C3F53B]/20 font-extrabold'
-                      : 'text-slate-400 hover:text-white hover:bg-[#111111]'
+                      : isDarkMode
+                        ? 'text-slate-400 hover:text-white hover:bg-[#111111]'
+                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
                   }`
                 }
               >
-                <Icon className={`w-4 h-4 shrink-0 ${isActive ? 'text-black' : 'text-slate-300'}`} />
+                <Icon className={`w-4 h-4 shrink-0 ${isActive ? 'text-black' : isDarkMode ? 'text-slate-300' : 'text-slate-500'}`} />
                 {!collapsed && (
                   <span className="truncate tracking-wider uppercase font-mono text-[11px]">{item.name}</span>
                 )}
@@ -124,8 +134,10 @@ export default function Sidebar({ isMobileOpen, setIsMobileOpen }) {
         </nav>
 
         {/* Bottom Section: Admin Profile */}
-        <div className="p-3 border-t border-[#1A1A1A] bg-black">
-          <div className="flex items-center gap-3 p-2.5 rounded-2xl bg-[#0D0D0D] border border-[#1A1A1A]">
+        <div className={`p-3 border-t ${isDarkMode ? 'border-[#1A1A1A] bg-black' : 'border-slate-200 bg-white'}`}>
+          <div className={`flex items-center gap-3 p-2.5 rounded-2xl border ${
+            isDarkMode ? 'bg-[#0D0D0D] border-[#1A1A1A]' : 'bg-slate-100 border-slate-200'
+          }`}>
             <div className="relative shrink-0">
               <img
                 src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80"
@@ -137,7 +149,9 @@ export default function Sidebar({ isMobileOpen, setIsMobileOpen }) {
 
             {!collapsed && (
               <div className="flex-1 min-w-0">
-                <p className="text-xs font-bold text-white truncate flex items-center gap-1">
+                <p className={`text-xs font-bold truncate flex items-center gap-1 ${
+                  isDarkMode ? 'text-white' : 'text-slate-900'
+                }`}>
                   Dr. Aris Thorne <ShieldCheck className="w-3.5 h-3.5 text-[#C3F53B] shrink-0" />
                 </p>
                 <p className="text-[11px] text-slate-400 font-mono truncate">Lead Evaluator</p>
@@ -146,7 +160,9 @@ export default function Sidebar({ isMobileOpen, setIsMobileOpen }) {
 
             {!collapsed && (
               <button
-                className="p-1.5 text-slate-400 hover:text-[#FF8C00] hover:bg-[#1E1E22] rounded-lg transition-colors"
+                className={`p-1.5 rounded-lg transition-colors ${
+                  isDarkMode ? 'text-slate-400 hover:text-[#FF8C00] hover:bg-[#1E1E22]' : 'text-slate-500 hover:text-[#FF8C00] hover:bg-slate-200'
+                }`}
                 title="Logout"
               >
                 <LogOut className="w-4 h-4" />

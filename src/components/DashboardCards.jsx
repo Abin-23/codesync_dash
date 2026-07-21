@@ -21,164 +21,267 @@ import {
 } from 'lucide-react';
 
 export default function DashboardCards() {
-  const { kpis } = useLiveData();
+  const { kpis, isDarkMode, setIsDarkMode } = useLiveData();
 
-  const cardsData = [
-    {
-      title: "Total Students",
-      value: kpis.totalStudents,
-      desc: "Registered hackathon participants",
-      icon: Users,
-      trend: "+100%",
-      trendUp: true,
-      color: "from-blue-500/20 to-blue-600/5",
-      border: "border-blue-500/30",
-      iconColor: "text-blue-400"
-    },
+  const mainCardsData = [
     {
       title: "Login Active Count",
       value: kpis.loginActiveCount,
       desc: "Currently logged into IDE",
       icon: UserCheck,
-      trend: "88% Online",
       trendUp: true,
-      color: "from-emerald-500/20 to-emerald-600/5",
-      border: "border-emerald-500/30",
-      iconColor: "text-emerald-400"
+      colorDark: "from-emerald-500/25 via-emerald-600/10 to-transparent",
+      colorLight: "from-emerald-500/15 via-emerald-500/5 to-white",
+      borderDark: "border-emerald-500/40",
+      borderLight: "border-emerald-300",
+      iconBgDark: "bg-emerald-500/10 border-emerald-500/30 text-emerald-400",
+      iconBgLight: "bg-emerald-50 border-emerald-200 text-emerald-600",
+      glowClass: "hover:shadow-[0_0_35px_-5px_rgba(16,185,129,0.35)]"
     },
     {
       title: "Total Active Users",
       value: kpis.totalActiveUsers,
       desc: "Actively writing code & tests",
       icon: Zap,
-      trend: "Peak load",
       trendUp: true,
-      color: "from-purple-500/20 to-purple-600/5",
-      border: "border-purple-500/30",
-      iconColor: "text-purple-400"
+      colorDark: "from-purple-500/25 via-purple-600/10 to-transparent",
+      colorLight: "from-purple-500/15 via-purple-500/5 to-white",
+      borderDark: "border-purple-500/40",
+      borderLight: "border-purple-300",
+      iconBgDark: "bg-purple-500/10 border-purple-500/30 text-purple-400",
+      iconBgLight: "bg-purple-50 border-purple-200 text-purple-600",
+      glowClass: "hover:shadow-[0_0_35px_-5px_rgba(168,85,247,0.35)]"
     },
-    
     {
       title: "Submissions",
       value: kpis.submissionsCount,
       desc: "Final code repositories pushed",
       icon: FileCheck,
-      trend: "+4 last 10m",
       trendUp: true,
-      color: "from-indigo-500/20 to-indigo-600/5",
-      border: "border-indigo-500/30",
-      iconColor: "text-indigo-400"
+      colorDark: "from-indigo-500/25 via-indigo-600/10 to-transparent",
+      colorLight: "from-indigo-500/15 via-indigo-500/5 to-white",
+      borderDark: "border-indigo-500/40",
+      borderLight: "border-indigo-300",
+      iconBgDark: "bg-indigo-500/10 border-indigo-500/30 text-indigo-400",
+      iconBgLight: "bg-indigo-50 border-indigo-200 text-indigo-600",
+      glowClass: "hover:shadow-[0_0_35px_-5px_rgba(99,102,241,0.35)]"
     },
     {
       title: "Completed",
       value: kpis.completedCount,
       desc: "Passed all evaluation benchmarks",
       icon: Trophy,
-      trend: "High quality",
       trendUp: true,
-      color: "from-amber-500/20 to-amber-600/5",
-      border: "border-amber-500/30",
-      iconColor: "text-amber-400"
-    },
-    {
-      title: "Timer Running",
-      value: kpis.timerRunningCount,
-      desc: "Active countdown timers",
-      icon: Timer,
-      trend: "1h session",
-      trendUp: true,
-      color: "from-cyan-500/20 to-cyan-600/5",
-      border: "border-cyan-500/30",
-      iconColor: "text-cyan-400"
-    },
+      colorDark: "from-amber-500/25 via-amber-600/10 to-transparent",
+      colorLight: "from-amber-500/15 via-amber-500/5 to-white",
+      borderDark: "border-amber-500/40",
+      borderLight: "border-amber-300",
+      iconBgDark: "bg-amber-500/10 border-amber-500/30 text-amber-400",
+      iconBgLight: "bg-amber-50 border-amber-200 text-amber-600",
+      glowClass: "hover:shadow-[0_0_35px_-5px_rgba(245,158,11,0.35)]"
+    }
+  ];
+
+  const otherCardsData = [
     {
       title: "Unit Tests Started",
       value: kpis.unitTestsStartedCount,
       desc: "Automated test suites initiated",
       icon: TestTube2,
-      trend: "Automated",
       trendUp: true,
-      color: "from-violet-500/20 to-violet-600/5",
-      border: "border-violet-500/30",
-      iconColor: "text-violet-400"
+      colorDark: "from-violet-500/20 to-violet-600/5",
+      colorLight: "from-violet-500/10 to-white",
+      borderDark: "border-violet-500/30",
+      borderLight: "border-violet-200",
+      iconBgDark: "bg-slate-900/80 border-slate-800 text-violet-400",
+      iconBgLight: "bg-violet-50 border-violet-200 text-violet-600"
     },
     {
       title: "Unit Tests Passed",
       value: kpis.unitTestsPassedCount,
       desc: "Passed 100% unit assertions",
       icon: CheckCircle,
-      trend: "92% Pass Rate",
       trendUp: true,
-      color: "from-teal-500/20 to-teal-600/5",
-      border: "border-teal-500/30",
-      iconColor: "text-teal-400"
+      colorDark: "from-teal-500/20 to-teal-600/5",
+      colorLight: "from-teal-500/10 to-white",
+      borderDark: "border-teal-500/30",
+      borderLight: "border-teal-200",
+      iconBgDark: "bg-slate-900/80 border-slate-800 text-teal-400",
+      iconBgLight: "bg-teal-50 border-teal-200 text-teal-600"
     },
     {
       title: "Integration Tests Started",
       value: kpis.integrationStartedCount,
       desc: "End-to-end system runs",
       icon: Layers,
-      trend: "In progress",
       trendUp: true,
-      color: "from-fuchsia-500/20 to-fuchsia-600/5",
-      border: "border-fuchsia-500/30",
-      iconColor: "text-fuchsia-400"
+      colorDark: "from-fuchsia-500/20 to-fuchsia-600/5",
+      colorLight: "from-fuchsia-500/10 to-white",
+      borderDark: "border-fuchsia-500/30",
+      borderLight: "border-fuchsia-200",
+      iconBgDark: "bg-slate-900/80 border-slate-800 text-fuchsia-400",
+      iconBgLight: "bg-fuchsia-50 border-fuchsia-200 text-fuchsia-600"
     },
     {
       title: "Integration Tests Passed",
       value: kpis.integrationPassedCount,
       desc: "Verified API response suites",
       icon: ShieldCheck,
-      trend: "Stable",
       trendUp: true,
-      color: "from-emerald-500/20 to-emerald-600/5",
-      border: "border-emerald-500/30",
-      iconColor: "text-emerald-400"
+      colorDark: "from-emerald-500/20 to-emerald-600/5",
+      colorLight: "from-emerald-500/10 to-white",
+      borderDark: "border-emerald-500/30",
+      borderLight: "border-emerald-200",
+      iconBgDark: "bg-slate-900/80 border-slate-800 text-emerald-400",
+      iconBgLight: "bg-emerald-50 border-emerald-200 text-emerald-600"
     }
   ];
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-      {cardsData.map((card, index) => {
-        const Icon = card.icon;
-        return (
-          <motion.div
-            key={card.title}
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3, delay: index * 0.02 }}
-            whileHover={{ y: -3, transition: { duration: 0.15 } }}
-            className={`relative p-4 rounded-2xl bg-gradient-to-b ${card.color} glass-panel border ${card.border} glass-panel-hover flex flex-col justify-between overflow-hidden group min-h-[140px]`}
-          >
-            {/* Top row */}
-            <div className="flex items-start justify-between gap-2 mb-2">
-              <span className="text-xs font-semibold text-slate-300 uppercase tracking-wider leading-snug">
-                {card.title}
-              </span>
-              <div className={`p-1.5 rounded-xl bg-slate-900/80 border border-slate-800 ${card.iconColor} shrink-0 group-hover:scale-110 transition-transform`}>
-                <Icon className="w-4 h-4" />
-              </div>
-            </div>
+    <div className={`space-y-6 transition-all duration-300 ${
+      !isDarkMode ? 'p-6 rounded-3xl bg-slate-100/95 border border-slate-300 shadow-2xl shadow-slate-300/60' : ''
+    }`}>
+      {/* Top Header & Theme Switcher Bar */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-1">
+        
+      </div>
 
-            {/* Main Value */}
-            <div className="my-1">
-              <div className="text-2xl font-black text-slate-100 tracking-tight font-mono">
-                {card.value}
-              </div>
-            </div>
+      {/* Main Cards Grid (Prominent, Larger size) */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6">
+        {mainCardsData.map((card, index) => {
+          const Icon = card.icon;
+          return (
+            <motion.div
+              key={card.title}
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3, delay: index * 0.04 }}
+              whileHover={{ y: -5, transition: { duration: 0.15 } }}
+              className={`relative p-6 sm:p-7 rounded-3xl bg-gradient-to-b ${
+                isDarkMode ? card.colorDark : card.colorLight
+              } ${
+                isDarkMode 
+                  ? 'bg-[#0D0D0D]/90 border text-slate-100' 
+                  : 'bg-white border shadow-xl shadow-slate-300/40 text-slate-900'
+              } ${
+                isDarkMode ? card.borderDark : card.borderLight
+              } ${card.glowClass} flex flex-col justify-between overflow-hidden group min-h-[200px] transition-all duration-300`}
+            >
+              {/* Subtle top glow ring inside */}
+              <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-white/5 to-transparent rounded-full blur-2xl pointer-events-none -mr-10 -mt-10 group-hover:scale-150 transition-transform duration-500" />
 
-            {/* Footer / Trend */}
-            <div className="flex items-center justify-between text-xs text-slate-400 pt-2 border-t border-slate-800/60 mt-2 gap-2">
-              <span className="text-slate-400 leading-tight">{card.desc}</span>
-              <span className={`inline-flex items-center gap-0.5 font-medium text-[10px] px-1.5 py-0.5 rounded-md shrink-0 ${card.trendUp ? 'bg-emerald-500/10 text-emerald-400' : 'bg-red-500/10 text-red-400'
+              {/* Top row */}
+              <div className="flex items-start justify-between gap-3 mb-4 relative z-10">
+                <span className={`text-sm font-bold uppercase tracking-wider leading-snug ${
+                  isDarkMode ? 'text-slate-200' : 'text-slate-700'
                 }`}>
-                {card.trendUp ? <TrendingUp className="w-2.5 h-2.5 shrink-0" /> : <TrendingDown className="w-2.5 h-2.5 shrink-0" />}
-                {card.trend}
-              </span>
-            </div>
-          </motion.div>
-        );
-      })}
+                  {card.title}
+                </span>
+                <div className={`p-3 rounded-2xl border shrink-0 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300 shadow-md ${
+                  isDarkMode ? card.iconBgDark : card.iconBgLight
+                }`}>
+                  <Icon className="w-6 h-6 sm:w-7 sm:h-7" />
+                </div>
+              </div>
+
+              {/* Main Value */}
+              <div className="my-2 relative z-10">
+                <div className={`text-4xl sm:text-5xl font-black tracking-tight font-mono ${
+                  isDarkMode ? 'text-slate-100' : 'text-slate-900'
+                }`}>
+                  {card.value}
+                </div>
+              </div>
+
+              {/* Footer / Trend */}
+              <div className={`flex items-center justify-between text-xs pt-3.5 border-t mt-3 gap-2 relative z-10 ${
+                isDarkMode ? 'border-slate-800/80 text-slate-400' : 'border-slate-200 text-slate-600'
+              }`}>
+                <span className="leading-tight font-medium">{card.desc}</span>
+                <span className={`inline-flex items-center gap-1 font-bold text-xs px-2.5 py-1 rounded-lg shrink-0 shadow-sm ${
+                  card.trendUp 
+                    ? (isDarkMode ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30' : 'bg-emerald-100 text-emerald-800 border border-emerald-300')
+                    : (isDarkMode ? 'bg-red-500/15 text-red-400 border border-red-500/30' : 'bg-red-100 text-red-800 border border-red-300')
+                }`}>
+                  {card.trendUp ? <TrendingUp className="w-3.5 h-3.5 shrink-0" /> : <TrendingDown className="w-3.5 h-3.5 shrink-0" />}
+                  {card.trend}
+                </span>
+              </div>
+            </motion.div>
+          );
+        })}
+      </div>
+
+      {/* Subheader for Other Cards */}
+      <div className={`flex items-center justify-between pt-5 pb-2 border-b ${
+        isDarkMode ? 'border-slate-800/80' : 'border-slate-300'
+      }`}>
+        
+      </div>
+
+      {/* Other Cards Grid (All exact same size: standard compact cards) */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {otherCardsData.map((card, index) => {
+          const Icon = card.icon;
+          return (
+            <motion.div
+              key={card.title}
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3, delay: index * 0.03 + 0.1 }}
+              whileHover={{ y: -3, transition: { duration: 0.15 } }}
+              className={`relative p-4 rounded-2xl bg-gradient-to-b ${
+                isDarkMode ? card.colorDark : card.colorLight
+              } ${
+                isDarkMode 
+                  ? 'bg-[#0D0D0D] border text-slate-100' 
+                  : 'bg-white border shadow-md shadow-slate-200/60 text-slate-900'
+              } ${
+                isDarkMode ? card.borderDark : card.borderLight
+              } flex flex-col justify-between overflow-hidden group min-h-[140px] transition-all duration-300`}
+            >
+              {/* Top row */}
+              <div className="flex items-start justify-between gap-2 mb-2">
+                <span className={`text-xs font-semibold uppercase tracking-wider leading-snug ${
+                  isDarkMode ? 'text-slate-300' : 'text-slate-700'
+                }`}>
+                  {card.title}
+                </span>
+                <div className={`p-1.5 rounded-xl border shrink-0 group-hover:scale-110 transition-transform ${
+                  isDarkMode ? card.iconBgDark : card.iconBgLight
+                }`}>
+                  <Icon className="w-4 h-4" />
+                </div>
+              </div>
+
+              {/* Main Value */}
+              <div className="my-1">
+                <div className={`text-2xl font-black tracking-tight font-mono ${
+                  isDarkMode ? 'text-slate-100' : 'text-slate-900'
+                }`}>
+                  {card.value}
+                </div>
+              </div>
+
+              {/* Footer / Trend */}
+              <div className={`flex items-center justify-between text-xs pt-2 border-t mt-2 gap-2 ${
+                isDarkMode ? 'border-slate-800/60 text-slate-400' : 'border-slate-200 text-slate-600'
+              }`}>
+                <span className="leading-tight">{card.desc}</span>
+                <span className={`inline-flex items-center gap-0.5 font-medium text-[10px] px-1.5 py-0.5 rounded-md shrink-0 ${
+                  card.trendUp 
+                    ? (isDarkMode ? 'bg-emerald-500/10 text-emerald-400' : 'bg-emerald-100 text-emerald-800')
+                    : (isDarkMode ? 'bg-red-500/10 text-red-400' : 'bg-red-100 text-red-800')
+                }`}>
+                  {card.trendUp ? <TrendingUp className="w-2.5 h-2.5 shrink-0" /> : <TrendingDown className="w-2.5 h-2.5 shrink-0" />}
+                  {card.trend}
+                </span>
+              </div>
+            </motion.div>
+          );
+        })}
+      </div>
     </div>
   );
 }
+
