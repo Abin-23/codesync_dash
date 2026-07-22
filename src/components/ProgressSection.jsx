@@ -5,7 +5,7 @@ import { Flag, Sparkles, CheckCircle2, Clock, PlayCircle } from 'lucide-react';
 
 export default function ProgressSection() {
   const { kpis } = useLiveData();
-  const progressPercent = kpis.overallCompletionPercentage || 68;
+  const progressPercent = typeof kpis.overallCompletionPercentage === 'number' ? kpis.overallCompletionPercentage : 0;
 
   return (
     <motion.div
@@ -62,7 +62,7 @@ export default function ProgressSection() {
         </div>
         <div className="flex items-center gap-2 text-xs text-slate-300">
           <PlayCircle className="w-4 h-4 text-blue-400 shrink-0" />
-          <span>Coding / Testing: <strong className="text-white font-mono">{kpis.totalActiveUsers}</strong></span>
+          <span>Active Dev Users: <strong className="text-white font-mono">{kpis.totalActiveUsers}</strong></span>
         </div>
         <div className="flex items-center gap-2 text-xs text-slate-300">
           <Clock className="w-4 h-4 text-amber-400 shrink-0" />

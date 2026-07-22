@@ -315,9 +315,9 @@ export default function RightPanel() {
                     <Users className="w-4 h-4" />
                   </div>
                   <div>
-                    <p className="text-xs font-medium text-slate-400">Students Online</p>
+                    <p className="text-xs font-medium text-slate-400">Dev Users Online</p>
                     <p className={`text-sm font-bold font-mono ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
-                      {kpis.loginActiveCount} / {kpis.totalStudents}
+                      {kpis.loginActiveCount} / {kpis.devUsersCount || kpis.totalStudents}
                     </p>
                   </div>
                 </div>

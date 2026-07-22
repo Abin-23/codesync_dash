@@ -391,7 +391,7 @@ export default function LogsPage() {
           </div>
 
           {/* Terminal Box */}
-          <div className="lg:col-span-3 matte-card p-5 bg-[#0D0D0D] border border-[#222226] space-y-4 font-mono">
+          <div className="terminal-box lg:col-span-3 matte-card p-5 bg-[#0D0D0D] border border-[#222226] space-y-4 font-mono">
             <div className="flex items-center justify-between border-b border-[#222226] pb-3">
               <div className="flex items-center gap-3">
                 <div className="flex items-center gap-1.5">
@@ -408,7 +408,7 @@ export default function LogsPage() {
               </span>
             </div>
 
-            <div className="bg-black/90 p-4 rounded-xl border border-[#1A1A1A] min-h-[360px] max-h-[500px] overflow-y-auto space-y-2 text-xs leading-relaxed">
+            <div className="terminal-box bg-black/90 p-4 rounded-xl border border-[#1A1A1A] min-h-[360px] max-h-[500px] overflow-y-auto space-y-2 text-xs leading-relaxed">
               <p className="text-slate-500">// Connected to CodeSync Realtime Debugger session for {selectedStudent?.name}</p>
               <p className="text-slate-500">// Assigned Task: {selectedStudent?.assignedTask}</p>
               <div className="border-t border-[#1A1A1A] my-2 pt-2" />

@@ -134,7 +134,7 @@ export default function Sidebar({ isMobileOpen, setIsMobileOpen }) {
             }`}>
             <div className="relative shrink-0">
               <img
-                src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80"
+                src="https://www.ajce.in/ece/alumni/images/Binumon.jpg"
                 alt="Admin Avatar"
                 className="w-9 h-9 rounded-xl object-cover ring-2 ring-[#C3F53B]"
               />

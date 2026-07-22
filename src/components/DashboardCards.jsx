@@ -27,7 +27,7 @@ export default function DashboardCards() {
     {
       title: "Login Active Count",
       value: kpis.loginActiveCount,
-      desc: "Currently logged into IDE",
+      desc: "Dev users logged into IDE",
       icon: UserCheck,
       trendUp: true,
       colorDark: "from-emerald-500/25 via-emerald-600/10 to-transparent",
@@ -41,7 +41,7 @@ export default function DashboardCards() {
     {
       title: "Total Active Users",
       value: kpis.totalActiveUsers,
-      desc: "Actively writing code & tests",
+      desc: "Dev users coding & testing",
       icon: Zap,
       trendUp: true,
       colorDark: "from-purple-500/25 via-purple-600/10 to-transparent",
@@ -83,58 +83,7 @@ export default function DashboardCards() {
   ];
 
   const otherCardsData = [
-    {
-      title: "Unit Tests Started",
-      value: kpis.unitTestsStartedCount,
-      desc: "Automated test suites initiated",
-      icon: TestTube2,
-      trendUp: true,
-      colorDark: "from-violet-500/20 to-violet-600/5",
-      colorLight: "from-violet-500/10 to-white",
-      borderDark: "border-violet-500/30",
-      borderLight: "border-violet-200",
-      iconBgDark: "bg-slate-900/80 border-slate-800 text-violet-400",
-      iconBgLight: "bg-violet-50 border-violet-200 text-violet-600"
-    },
-    {
-      title: "Unit Tests Passed",
-      value: kpis.unitTestsPassedCount,
-      desc: "Passed 100% unit assertions",
-      icon: CheckCircle,
-      trendUp: true,
-      colorDark: "from-teal-500/20 to-teal-600/5",
-      colorLight: "from-teal-500/10 to-white",
-      borderDark: "border-teal-500/30",
-      borderLight: "border-teal-200",
-      iconBgDark: "bg-slate-900/80 border-slate-800 text-teal-400",
-      iconBgLight: "bg-teal-50 border-teal-200 text-teal-600"
-    },
-    {
-      title: "Integration Tests Started",
-      value: kpis.integrationStartedCount,
-      desc: "End-to-end system runs",
-      icon: Layers,
-      trendUp: true,
-      colorDark: "from-fuchsia-500/20 to-fuchsia-600/5",
-      colorLight: "from-fuchsia-500/10 to-white",
-      borderDark: "border-fuchsia-500/30",
-      borderLight: "border-fuchsia-200",
-      iconBgDark: "bg-slate-900/80 border-slate-800 text-fuchsia-400",
-      iconBgLight: "bg-fuchsia-50 border-fuchsia-200 text-fuchsia-600"
-    },
-    {
-      title: "Integration Tests Passed",
-      value: kpis.integrationPassedCount,
-      desc: "Verified API response suites",
-      icon: ShieldCheck,
-      trendUp: true,
-      colorDark: "from-emerald-500/20 to-emerald-600/5",
-      colorLight: "from-emerald-500/10 to-white",
-      borderDark: "border-emerald-500/30",
-      borderLight: "border-emerald-200",
-      iconBgDark: "bg-slate-900/80 border-slate-800 text-emerald-400",
-      iconBgLight: "bg-emerald-50 border-emerald-200 text-emerald-600"
-    }
+  
   ];
 
   return (

@@ -132,18 +132,19 @@ html.light, body.light {
 }
 
 /* Hardcoded dark backgrounds across tables, panels & cards in light mode */
-.light .bg-black:not(header):not(aside) {
+.light .bg-black:not(header):not(aside):not(.terminal-box) {
   background-color: #FFFFFF !important;
 }
 
-.light [class*="bg-[#0D0D0D]"]:not(header):not(aside),
-.light [class*="bg-slate-900"]:not(header):not(aside) {
+.light [class*="bg-[#0D0D0D]"]:not(header):not(aside):not(.terminal-box),
+.light [class*="bg-[#090D16]"]:not(header):not(aside):not(.terminal-box),
+.light [class*="bg-slate-900"]:not(header):not(aside):not(.terminal-box) {
   background-color: #FFFFFF !important;
   box-shadow: 0 2px 10px -2px rgba(0, 0, 0, 0.04);
 }
 
-.light [class*="bg-[#111111]"]:not(header):not(aside),
-.light [class*="bg-slate-800"]:not(header):not(aside),
+.light [class*="bg-[#111111]"]:not(header):not(aside):not(.terminal-box),
+.light [class*="bg-slate-800"]:not(header):not(aside):not(.terminal-box),
 .light [class*="bg-[#0A0A0C]"] {
   background-color: #F1F5F9 !important;
 }
@@ -281,4 +282,44 @@ html.light, body.light {
 
 .light .text-\[\#C3F53B\] {
   color: #65a30d !important;
+}
+
+/* ── Terminal & Debugger Consoles (Stay high-contrast dark developer screen in both modes) ── */
+.terminal-box,
+.light .terminal-box,
+.light div.terminal-box {
+  background-color: #030712 !important;
+  border: 1px solid #1E293B !important;
+  color: #E2E8F0 !important;
+}
+
+.terminal-box *,
+.light .terminal-box *,
+.light .terminal-box [class*="text-slate-"] {
+  color: #CBD5E1 !important;
+}
+
+.terminal-box .text-red-400,
+.light .terminal-box .text-red-400 {
+  color: #F87171 !important;
+}
+
+.terminal-box .text-amber-400,
+.light .terminal-box .text-amber-400 {
+  color: #FBBF24 !important;
+}
+
+.terminal-box .text-emerald-400,
+.light .terminal-box .text-emerald-400 {
+  color: #34D399 !important;
+}
+
+.terminal-box .text-slate-600,
+.light .terminal-box .text-slate-600 {
+  color: #64748B !important;
+}
+
+.terminal-box .text-slate-500,
+.light .terminal-box .text-slate-500 {
+  color: #94A3B8 !important;
 }

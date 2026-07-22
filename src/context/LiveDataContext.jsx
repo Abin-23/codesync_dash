@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { rtdb } from '../config/firebase';
-import { ref, onValue } from 'firebase/database';
+import { ref, onValue, set } from 'firebase/database';
 
 const LiveDataContext = createContext();
 
@@ -61,11 +61,13 @@ export const LiveDataProvider = ({ children }) => {
         const hasSubmitted = statusUser.hasSubmitted || userSubs.length > 0;
         const isOnline = statusUser.isOnline;
         const statusStr = hasSubmitted ? "Submitted" : (isOnline ? "Coding" : "Offline");
-        const progressVal = hasSubmitted ? 100 : (isOnline ? 75 : 0);
+        const progressVal = hasSubmitted ? 100 : 0;
+        const role = statusUser.role || statusUser.userRole || statusUser.user_role || latestSub.role || latestSub.userRole || "dev";
 
         realStudents.push({
           id: uid,
           name: displayName,
+          role: role,
           email: email,
           avatar: avatar,
           loginTime: statusUser.lastActive ? new Date(statusUser.lastActive).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "N/A",
@@ -161,6 +163,14 @@ export const LiveDataProvider = ({ children }) => {
     }
   });
 
+  const [isSystemLocked, setIsSystemLocked] = useState(() => {
+    try {
+      return localStorage.getItem('codesync_system_locked') === 'true';
+    } catch (e) {
+      return false;
+    }
+  });
+
   useEffect(() => {
     if (!isTimerRunning) return;
     const timer = setInterval(() => {
@@ -179,8 +189,28 @@ export const LiveDataProvider = ({ children }) => {
     try {
       localStorage.setItem('codesync_event_timer', eventTimeRemaining);
       localStorage.setItem('codesync_timer_running', isTimerRunning);
+      localStorage.setItem('codesync_system_locked', isSystemLocked);
     } catch (e) { }
-  }, [eventTimeRemaining, isTimerRunning]);
+  }, [eventTimeRemaining, isTimerRunning, isSystemLocked]);
+
+  // Sync timer pause/run & system lock state to Firebase under 'admin_key' so all user windows stop or lock
+  useEffect(() => {
+    if (!rtdb) return;
+    try {
+      const adminKeyRef = ref(rtdb, 'admin_key');
+      set(adminKeyRef, {
+        isTimerRunning: isTimerRunning,
+        isSystemLocked: isSystemLocked,
+        stopAllWindows: !isTimerRunning || isSystemLocked,
+        lockAllWindows: isSystemLocked,
+        status: isSystemLocked ? 'locked' : (isTimerRunning ? 'running' : 'stopped'),
+        timerPaused: !isTimerRunning,
+        updatedAt: Date.now()
+      }).catch(err => console.error("Failed to sync admin_key to RTDB:", err));
+    } catch (err) {
+      console.error("Error setting admin_key:", err);
+    }
+  }, [isTimerRunning, isSystemLocked]);
 
   const updateStudentTimer = (studentId, newTimerSeconds) => {
     setStudents(prev => prev.map(s => s.id === studentId ? { ...s, timerRemaining: newTimerSeconds } : s));
@@ -214,6 +244,18 @@ export const LiveDataProvider = ({ children }) => {
   // Selected student logs modal
   const [selectedLogsModal, setSelectedLogsModal] = useState(null);
 
+  // Keep modal forms synced with live login & console log updates
+  useEffect(() => {
+    if (selectedStudentModal) {
+      const updated = students.find(s => s.id === selectedStudentModal.id);
+      if (updated) setSelectedStudentModal(updated);
+    }
+    if (selectedLogsModal) {
+      const updated = students.find(s => s.id === selectedLogsModal.id);
+      if (updated) setSelectedLogsModal(updated);
+    }
+  }, [students]);
+
   // Global search & filter state
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
@@ -224,10 +266,17 @@ export const LiveDataProvider = ({ children }) => {
 
 
 
+  // Helper to check whether user role from Firebase is 'dev'
+  const isDevUser = (s) => {
+    const r = String(s.role || 'dev').toLowerCase().trim();
+    return r === 'dev' || r === 'developer' || r === 'developer_user';
+  };
+
   // Derived KPI metrics
   const totalStudents = students.length;
-  const loginActiveCount = students.filter(s => s.isOnline).length;
-  const totalActiveUsers = students.filter(s => s.isOnline).length;
+  const devUsersCount = students.filter(isDevUser).length;
+  const loginActiveCount = students.filter(s => s.isOnline && isDevUser(s)).length;
+  const totalActiveUsers = students.filter(s => s.isOnline && isDevUser(s)).length;
   const tasksAssigned = students.filter(s => s.assignedTask).length;
   const submissionsCount = students.filter(s => s.submissionStatus === "Submitted").length;
   const completedCount = students.filter(s => s.status === "Completed").length;
@@ -258,6 +307,8 @@ export const LiveDataProvider = ({ children }) => {
       setEventTimeRemaining,
       isTimerRunning,
       setIsTimerRunning,
+      isSystemLocked,
+      setIsSystemLocked,
       updateStudentTimer,
       notifications,
       setNotifications,
@@ -281,6 +332,7 @@ export const LiveDataProvider = ({ children }) => {
       // KPIs
       kpis: {
         totalStudents,
+        devUsersCount,
         loginActiveCount,
         totalActiveUsers,
         tasksAssigned,

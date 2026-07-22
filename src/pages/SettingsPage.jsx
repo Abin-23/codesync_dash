@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { useLiveData } from '../context/LiveDataContext';
-import { Settings, Moon, Bell, RefreshCw, Sliders } from 'lucide-react';
+import { Settings, Moon, Bell, RefreshCw, Sliders, Lock, Unlock } from 'lucide-react';
 
 export default function SettingsPage() {
-  const { isLiveUpdating, setIsLiveUpdating, updateIntervalMs, setUpdateIntervalMs, isDarkMode, setIsDarkMode } = useLiveData();
+  const { isLiveUpdating, setIsLiveUpdating, updateIntervalMs, setUpdateIntervalMs, isDarkMode, setIsDarkMode, isSystemLocked, setIsSystemLocked } = useLiveData();
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
 
   return (
@@ -19,6 +19,48 @@ export default function SettingsPage() {
       </div>
 
       <div className="space-y-4">
+        {/* System Lock / Unlock Control */}
+        <div className={`p-4 rounded-2xl border transition-all glass-panel flex items-center justify-between ${
+          isSystemLocked ? 'bg-red-950/30 border-red-500/50 shadow-[0_0_25px_-5px_rgba(239,68,68,0.3)]' : 'bg-slate-900/60 border-slate-800'
+        }`}>
+          <div className="flex items-center gap-3">
+            <div className={`p-2 rounded-xl ${isSystemLocked ? 'bg-red-500/15 text-red-400' : 'bg-emerald-500/10 text-emerald-400'}`}>
+              {isSystemLocked ? <Lock className="w-5 h-5 animate-pulse" /> : <Unlock className="w-5 h-5" />}
+            </div>
+            <div>
+              <h3 className="text-sm font-bold text-slate-200 flex items-center gap-2">
+                System Lock / Unlock Control
+                {isSystemLocked && (
+                  <span className="px-2 py-0.5 rounded text-[10px] font-mono uppercase tracking-wide bg-red-500/20 text-red-400 border border-red-500/30">
+                    LOCKED
+                  </span>
+                )}
+              </h3>
+              <p className="text-xs text-slate-400">
+                {isSystemLocked ? 'All connected user IDE windows and systems are currently LOCKED and disabled.' : 'Lock or unlock all connected user windows across all IDE sessions immediately.'}
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={() => setIsSystemLocked(!isSystemLocked)}
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${
+              isSystemLocked
+                ? 'bg-red-500 text-white hover:bg-red-600 shadow-lg shadow-red-500/30'
+                : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 hover:bg-emerald-500/30'
+            }`}
+          >
+            {isSystemLocked ? (
+              <>
+                <Lock className="w-4 h-4" /> System Locked (Unlock All)
+              </>
+            ) : (
+              <>
+                <Unlock className="w-4 h-4" /> Lock All Systems
+              </>
+            )}
+          </button>
+        </div>
+
         {/* Theme Toggle */}
         <div className="p-4 rounded-2xl bg-slate-900/60 border border-slate-800 glass-panel flex items-center justify-between">
           <div className="flex items-center gap-3">

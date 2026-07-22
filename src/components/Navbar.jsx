@@ -72,14 +72,14 @@ export default function Navbar({ onToggleMobileSidebar, onToggleNotifications })
 
         {/* Global Website Theme Switcher */}
         <div className={`flex items-center p-1 rounded-2xl border transition-all ${isDarkMode
-            ? 'bg-[#111111] border-[#1A1A1A] text-slate-300'
-            : 'bg-slate-100 border-slate-300 shadow-sm text-slate-700'
+          ? 'bg-[#111111] border-[#1A1A1A] text-slate-300'
+          : 'bg-slate-100 border-slate-300 shadow-sm text-slate-700'
           }`}>
           <button
             onClick={() => setIsDarkMode(true)}
             className={`flex items-center gap-1 px-3 py-1 rounded-xl text-xs font-bold transition-all ${isDarkMode
-                ? 'bg-blue-600 text-white shadow-md shadow-blue-600/30 scale-105'
-                : 'hover:text-slate-900'
+              ? 'bg-blue-600 text-white shadow-md shadow-blue-600/30 scale-105'
+              : 'hover:text-slate-900'
               }`}
             title="Dark Theme Mode"
           >
@@ -89,8 +89,8 @@ export default function Navbar({ onToggleMobileSidebar, onToggleNotifications })
           <button
             onClick={() => setIsDarkMode(false)}
             className={`flex items-center gap-1 px-3 py-1 rounded-xl text-xs font-bold transition-all ${!isDarkMode
-                ? 'bg-amber-500 text-slate-950 shadow-md shadow-amber-500/30 font-black scale-105'
-                : 'hover:text-slate-200'
+              ? 'bg-amber-500 text-slate-950 shadow-md shadow-amber-500/30 font-black scale-105'
+              : 'hover:text-slate-200'
               }`}
             title="Light Theme Mode"
           >
@@ -116,12 +116,12 @@ export default function Navbar({ onToggleMobileSidebar, onToggleNotifications })
         {/* Admin Avatar */}
         <div className="flex items-center gap-2.5 pl-2 border-l border-[#1A1A1A]">
           <img
-            src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80"
+            src="https://www.ajce.in/ece/alumni/images/Binumon.jpg"
             alt="Admin Profile"
             className="w-8 h-8 rounded-full object-cover ring-2 ring-[#C3F53B] cursor-pointer hover:opacity-90 transition-opacity"
           />
           <div className="hidden xl:block text-left">
-            <p className="text-xs font-bold text-white">Abin Sebastian</p>
+            <p className="text-xs font-bold text-white">Binumon Joseph</p>
             <p className="text-[10px] text-[#C3F53B] font-mono font-bold">Control Admin</p>
           </div>
         </div>

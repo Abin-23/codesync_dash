@@ -187,12 +187,13 @@ export default function StudentTable({ limit }) {
                 <th className="py-3.5 px-4">Status</th>
                 <th className="py-3.5 px-4">Timer</th>
                 <th className="py-3.5 px-4">Submission</th>
+                <th className="py-3.5 px-4 text-right">Actions & Logs</th>
               </tr>
             </thead>
             <tbody className={`divide-y transition-colors ${isDarkMode ? 'divide-slate-800/60' : 'divide-slate-200'}`}>
               {paginatedStudents.length === 0 ? (
                 <tr>
-                  <td colSpan="6" className="py-8 text-center text-slate-500">
+                  <td colSpan="7" className="py-8 text-center text-slate-500">
                     No students match your filter criteria.
                   </td>
                 </tr>
@@ -200,7 +201,8 @@ export default function StudentTable({ limit }) {
                 paginatedStudents.map((student) => (
                   <tr
                     key={student.id}
-                    className={`transition-colors group ${
+                    onClick={() => setSelectedLogsModal(student)}
+                    className={`transition-colors group cursor-pointer ${
                       isDarkMode ? 'hover:bg-slate-800/40' : 'hover:bg-slate-50'
                     }`}
                   >
@@ -218,7 +220,12 @@ export default function StudentTable({ limit }) {
                           }`}>
                             {student.name}
                           </p>
-                          <p className="text-[10px] text-slate-400 font-mono">{student.id} • {student.email}</p>
+                          <div className="flex items-center gap-1.5 mt-0.5">
+                            <span className="text-[10px] text-slate-400 font-mono">{student.id} • {student.email}</span>
+                            <span className="px-1.5 py-0.2 rounded bg-[#C3F53B]/10 text-[#C3F53B] font-mono text-[9px] font-bold border border-[#C3F53B]/30 uppercase">
+                              {student.role || 'dev'}
+                            </span>
+                          </div>
                         </div>
                       </div>
                     </td>
@@ -302,6 +309,34 @@ export default function StudentTable({ limit }) {
                       }`}>
                         {student.submissionStatus}
                       </span>
+                    </td>
+
+                    {/* Actions & Logs */}
+                    <td className="py-3 px-4 text-right" onClick={(e) => e.stopPropagation()}>
+                      <div className="flex items-center justify-end gap-2">
+                        <button
+                          onClick={() => setSelectedLogsModal(student)}
+                          className={`px-2.5 py-1 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors ${
+                            isDarkMode
+                              ? 'bg-amber-500/15 text-amber-400 hover:bg-amber-500/25 border border-amber-500/30'
+                              : 'bg-amber-50 text-amber-700 hover:bg-amber-100 border border-amber-300'
+                          }`}
+                          title="View Login & Console Logs"
+                        >
+                          <Terminal className="w-3.5 h-3.5" /> View Logs
+                        </button>
+                        <button
+                          onClick={() => setSelectedStudentModal(student)}
+                          className={`px-2.5 py-1 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors ${
+                            isDarkMode
+                              ? 'bg-blue-500/15 text-blue-400 hover:bg-blue-500/25 border border-blue-500/30'
+                              : 'bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-300'
+                          }`}
+                          title="Open Evaluation Form"
+                        >
+                          <Eye className="w-3.5 h-3.5" /> Evaluate
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))
