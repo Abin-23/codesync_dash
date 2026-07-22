@@ -85,6 +85,7 @@ export const LiveDataProvider = ({ children }) => {
           score: hasSubmitted ? 96 : (isOnline ? 75 : 0),
           liveUrl: statusUser.lastSubmissionUrl || latestSub.r2Url || "",
           lastSubmissionFile: statusUser.lastSubmissionFile || latestSub.fileName || "",
+          isOnline: isOnline,
           submissionsCount: userSubs.length,
           userSubmissions: userSubs,
           logs: [
@@ -225,8 +226,8 @@ export const LiveDataProvider = ({ children }) => {
 
   // Derived KPI metrics
   const totalStudents = students.length;
-  const loginActiveCount = students.filter(s => s.status !== "Offline").length;
-  const totalActiveUsers = students.filter(s => s.status === "Coding" || s.status === "Testing").length;
+  const loginActiveCount = students.filter(s => s.isOnline).length;
+  const totalActiveUsers = students.filter(s => s.isOnline).length;
   const tasksAssigned = students.filter(s => s.assignedTask).length;
   const submissionsCount = students.filter(s => s.submissionStatus === "Submitted").length;
   const completedCount = students.filter(s => s.status === "Completed").length;
