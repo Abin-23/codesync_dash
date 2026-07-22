@@ -145,7 +145,7 @@ export default function Sidebar({ isMobileOpen, setIsMobileOpen }) {
               <div className="flex-1 min-w-0">
                 <p className={`text-xs font-bold truncate flex items-center gap-1 ${isDarkMode ? 'text-white' : 'text-slate-900'
                   }`}>
-                  Abin Sebastian <ShieldCheck className="w-3.5 h-3.5 text-[#C3F53B] shrink-0" />
+                  Administrator <ShieldCheck className="w-3.5 h-3.5 text-[#C3F53B] shrink-0" />
                 </p>
                 <p className="text-[11px] text-slate-400 font-mono truncate">Lead Evaluator</p>
               </div>
