@@ -23,9 +23,8 @@ export default function Navbar({ onToggleMobileSidebar, onToggleNotifications })
   const unreadCount = notifications.filter(n => n.unread).length;
 
   return (
-    <header className={`sticky top-0 z-30 h-16 border-b px-4 lg:px-6 flex items-center justify-between gap-4 transition-colors duration-300 ${
-      isDarkMode ? 'bg-black border-[#1A1A1A]' : 'bg-white/95 backdrop-blur-md border-slate-200 shadow-sm'
-    }`}>
+    <header className={`sticky top-0 z-30 h-16 border-b px-4 lg:px-6 flex items-center justify-between gap-4 transition-colors duration-300 ${isDarkMode ? 'bg-black border-[#1A1A1A]' : 'bg-white/95 backdrop-blur-md border-slate-200 shadow-sm'
+      }`}>
       {/* Left section: Mobile menu & Search */}
       <div className="flex items-center gap-3 flex-1 max-w-xl">
         <button
@@ -72,18 +71,16 @@ export default function Navbar({ onToggleMobileSidebar, onToggleNotifications })
         </div>
 
         {/* Global Website Theme Switcher */}
-        <div className={`flex items-center p-1 rounded-2xl border transition-all ${
-          isDarkMode 
-            ? 'bg-[#111111] border-[#1A1A1A] text-slate-300' 
+        <div className={`flex items-center p-1 rounded-2xl border transition-all ${isDarkMode
+            ? 'bg-[#111111] border-[#1A1A1A] text-slate-300'
             : 'bg-slate-100 border-slate-300 shadow-sm text-slate-700'
-        }`}>
+          }`}>
           <button
             onClick={() => setIsDarkMode(true)}
-            className={`flex items-center gap-1 px-3 py-1 rounded-xl text-xs font-bold transition-all ${
-              isDarkMode 
-                ? 'bg-blue-600 text-white shadow-md shadow-blue-600/30 scale-105' 
+            className={`flex items-center gap-1 px-3 py-1 rounded-xl text-xs font-bold transition-all ${isDarkMode
+                ? 'bg-blue-600 text-white shadow-md shadow-blue-600/30 scale-105'
                 : 'hover:text-slate-900'
-            }`}
+              }`}
             title="Dark Theme Mode"
           >
             <Moon className="w-3.5 h-3.5" />
@@ -91,11 +88,10 @@ export default function Navbar({ onToggleMobileSidebar, onToggleNotifications })
           </button>
           <button
             onClick={() => setIsDarkMode(false)}
-            className={`flex items-center gap-1 px-3 py-1 rounded-xl text-xs font-bold transition-all ${
-              !isDarkMode 
-                ? 'bg-amber-500 text-slate-950 shadow-md shadow-amber-500/30 font-black scale-105' 
+            className={`flex items-center gap-1 px-3 py-1 rounded-xl text-xs font-bold transition-all ${!isDarkMode
+                ? 'bg-amber-500 text-slate-950 shadow-md shadow-amber-500/30 font-black scale-105'
                 : 'hover:text-slate-200'
-            }`}
+              }`}
             title="Light Theme Mode"
           >
             <Sun className="w-3.5 h-3.5" />
@@ -125,7 +121,7 @@ export default function Navbar({ onToggleMobileSidebar, onToggleNotifications })
             className="w-8 h-8 rounded-full object-cover ring-2 ring-[#C3F53B] cursor-pointer hover:opacity-90 transition-opacity"
           />
           <div className="hidden xl:block text-left">
-            <p className="text-xs font-bold text-white">Dr. Aris Thorne</p>
+            <p className="text-xs font-bold text-white">Abin Sebastian</p>
             <p className="text-[10px] text-[#C3F53B] font-mono font-bold">Control Admin</p>
           </div>
         </div>
