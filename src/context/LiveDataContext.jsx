@@ -129,20 +129,80 @@ export const LiveDataProvider = ({ children }) => {
   }, []);
   const [isLiveUpdating, setIsLiveUpdating] = useState(true);
   const [updateIntervalMs, setUpdateIntervalMs] = useState(3000);
-  const [isDarkMode, setIsDarkMode] = useState(true);
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    try {
+      const savedTheme = localStorage.getItem('codesync_theme');
+      if (savedTheme !== null) {
+        return savedTheme === 'dark';
+      }
+    } catch (e) {
+      console.error('Error loading theme from localStorage:', e);
+    }
+    return true;
+  });
 
-  // Sync isDarkMode with document root classes for global theme styling
+  // Global Event Timer State with localStorage persistence
+  const [eventTimeRemaining, setEventTimeRemaining] = useState(() => {
+    try {
+      const savedTimer = localStorage.getItem('codesync_event_timer');
+      return savedTimer !== null ? parseInt(savedTimer, 10) : 4820;
+    } catch (e) {
+      return 4820;
+    }
+  });
+
+  const [isTimerRunning, setIsTimerRunning] = useState(() => {
+    try {
+      const savedRunning = localStorage.getItem('codesync_timer_running');
+      return savedRunning !== null ? savedRunning === 'true' : true;
+    } catch (e) {
+      return true;
+    }
+  });
+
   useEffect(() => {
-    if (isDarkMode) {
-      document.documentElement.classList.add('dark');
-      document.documentElement.classList.remove('light');
-      document.body.classList.add('dark');
-      document.body.classList.remove('light');
-    } else {
-      document.documentElement.classList.add('light');
-      document.documentElement.classList.remove('dark');
-      document.body.classList.add('light');
-      document.body.classList.remove('dark');
+    if (!isTimerRunning) return;
+    const timer = setInterval(() => {
+      setEventTimeRemaining(prev => {
+        const next = Math.max(0, prev - 1);
+        try {
+          localStorage.setItem('codesync_event_timer', next);
+        } catch (e) {}
+        return next;
+      });
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [isTimerRunning]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('codesync_event_timer', eventTimeRemaining);
+      localStorage.setItem('codesync_timer_running', isTimerRunning);
+    } catch (e) {}
+  }, [eventTimeRemaining, isTimerRunning]);
+
+  const updateStudentTimer = (studentId, newTimerSeconds) => {
+    setStudents(prev => prev.map(s => s.id === studentId ? { ...s, timerRemaining: newTimerSeconds } : s));
+  };
+
+  // Sync isDarkMode with document root classes for global theme styling & persist choice
+  useEffect(() => {
+    try {
+      if (isDarkMode) {
+        document.documentElement.classList.add('dark');
+        document.documentElement.classList.remove('light');
+        document.body.classList.add('dark');
+        document.body.classList.remove('light');
+        localStorage.setItem('codesync_theme', 'dark');
+      } else {
+        document.documentElement.classList.add('light');
+        document.documentElement.classList.remove('dark');
+        document.body.classList.add('light');
+        document.body.classList.remove('dark');
+        localStorage.setItem('codesync_theme', 'light');
+      }
+    } catch (e) {
+      console.error('Error saving theme to localStorage:', e);
     }
   }, [isDarkMode]);
 
@@ -193,6 +253,11 @@ export const LiveDataProvider = ({ children }) => {
       setUpdateIntervalMs,
       isDarkMode,
       setIsDarkMode,
+      eventTimeRemaining,
+      setEventTimeRemaining,
+      isTimerRunning,
+      setIsTimerRunning,
+      updateStudentTimer,
       notifications,
       setNotifications,
       selectedStudentModal,

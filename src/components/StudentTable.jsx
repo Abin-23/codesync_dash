@@ -14,7 +14,10 @@ import {
   AlertCircle,
   Play,
   RotateCcw,
-  Sparkles
+  Sparkles,
+  Edit3,
+  Check,
+  X
 } from 'lucide-react';
 
 export default function StudentTable({ limit }) {
@@ -31,10 +34,14 @@ export default function StudentTable({ limit }) {
     sortBy,
     setSortBy,
     setSelectedStudentModal,
-    setSelectedLogsModal
+    setSelectedLogsModal,
+    updateStudentTimer,
+    isDarkMode
   } = useLiveData();
 
   const [page, setPage] = useState(1);
+  const [editingStudentId, setEditingStudentId] = useState(null);
+  const [studentEditMins, setStudentEditMins] = useState(20);
   const pageSize = limit || 10;
 
   // Filter logic
@@ -86,20 +93,31 @@ export default function StudentTable({ limit }) {
     return `${mins}m ${s.toString().padStart(2, '0')}s`;
   };
 
+  const handleSaveStudentTimer = (studentId) => {
+    if (updateStudentTimer) {
+      updateStudentTimer(studentId, Math.max(0, studentEditMins * 60));
+    }
+    setEditingStudentId(null);
+  };
+
   return (
     <div className="space-y-4">
       {/* Filters & Control Bar */}
       {!limit && (
-        <div className="p-4 rounded-2xl bg-slate-900/60 border border-slate-800/80 glass-panel flex flex-wrap items-center justify-between gap-3">
+        <div className={`p-4 rounded-2xl border flex flex-wrap items-center justify-between gap-3 transition-colors ${
+          isDarkMode ? 'bg-slate-900/60 border-slate-800/80 glass-panel' : 'bg-white border-slate-200 shadow-sm'
+        }`}>
           <div className="flex flex-wrap items-center gap-2 flex-1">
             {/* Status Filter */}
-            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 text-xs">
+            <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs transition-colors ${
+              isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-slate-50 border-slate-200'
+            }`}>
               <Filter className="w-3.5 h-3.5 text-slate-400" />
               <span className="text-slate-400 font-medium">Status:</span>
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="bg-transparent text-slate-200 focus:outline-none cursor-pointer"
+                className={`bg-transparent focus:outline-none cursor-pointer ${isDarkMode ? 'text-slate-200' : 'text-slate-800'}`}
               >
                 <option value="All">All Statuses</option>
                 <option value="Offline">Offline</option>
@@ -112,12 +130,14 @@ export default function StudentTable({ limit }) {
             </div>
 
             {/* Submission Filter */}
-            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 text-xs">
+            <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs transition-colors ${
+              isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-slate-50 border-slate-200'
+            }`}>
               <span className="text-slate-400 font-medium">Submission:</span>
               <select
                 value={submissionFilter}
                 onChange={(e) => setSubmissionFilter(e.target.value)}
-                className="bg-transparent text-slate-200 focus:outline-none cursor-pointer"
+                className={`bg-transparent focus:outline-none cursor-pointer ${isDarkMode ? 'text-slate-200' : 'text-slate-800'}`}
               >
                 <option value="All">All Submissions</option>
                 <option value="Submitted">Submitted</option>
@@ -127,13 +147,15 @@ export default function StudentTable({ limit }) {
             </div>
 
             {/* Sort By */}
-            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 text-xs">
+            <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs transition-colors ${
+              isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-slate-50 border-slate-200'
+            }`}>
               <SlidersHorizontal className="w-3.5 h-3.5 text-slate-400" />
               <span className="text-slate-400 font-medium">Sort:</span>
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="bg-transparent text-slate-200 focus:outline-none cursor-pointer"
+                className={`bg-transparent focus:outline-none cursor-pointer ${isDarkMode ? 'text-slate-200' : 'text-slate-800'}`}
               >
                 <option value="name">Name</option>
                 <option value="progress">Highest Progress</option>
@@ -144,17 +166,21 @@ export default function StudentTable({ limit }) {
           </div>
 
           <div className="text-xs text-slate-400 font-medium">
-            Showing <span className="text-slate-100 font-bold">{sortedStudents.length}</span> students
+            Showing <span className={isDarkMode ? 'text-slate-100 font-bold' : 'text-slate-900 font-bold'}>{sortedStudents.length}</span> students
           </div>
         </div>
       )}
 
       {/* Main Table */}
-      <div className="rounded-2xl border border-slate-800/80 bg-slate-900/60 backdrop-blur-xl overflow-hidden shadow-2xl">
+      <div className={`rounded-2xl border overflow-hidden shadow-2xl transition-colors ${
+        isDarkMode ? 'border-slate-800/80 bg-slate-900/60 backdrop-blur-xl' : 'border-slate-200 bg-white shadow-slate-200/60'
+      }`}>
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs border-collapse">
             <thead>
-              <tr className="bg-slate-900/90 text-slate-400 border-b border-slate-800 uppercase tracking-wider font-semibold">
+              <tr className={`uppercase tracking-wider font-semibold border-b transition-colors ${
+                isDarkMode ? 'bg-slate-900/90 text-slate-400 border-slate-800' : 'bg-slate-100 text-slate-600 border-slate-200'
+              }`}>
                 <th className="py-3.5 px-4">Student</th>
                 <th className="py-3.5 px-4">Login Time</th>
                 <th className="py-3.5 px-4">Assigned Task</th>
@@ -163,10 +189,10 @@ export default function StudentTable({ limit }) {
                 <th className="py-3.5 px-4">Submission</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-800/60">
+            <tbody className={`divide-y transition-colors ${isDarkMode ? 'divide-slate-800/60' : 'divide-slate-200'}`}>
               {paginatedStudents.length === 0 ? (
                 <tr>
-                  <td colSpan="9" className="py-8 text-center text-slate-500">
+                  <td colSpan="6" className="py-8 text-center text-slate-500">
                     No students match your filter criteria.
                   </td>
                 </tr>
@@ -174,7 +200,9 @@ export default function StudentTable({ limit }) {
                 paginatedStudents.map((student) => (
                   <tr
                     key={student.id}
-                    className="hover:bg-slate-800/40 transition-colors group"
+                    className={`transition-colors group ${
+                      isDarkMode ? 'hover:bg-slate-800/40' : 'hover:bg-slate-50'
+                    }`}
                   >
                     {/* Student Name */}
                     <td className="py-3 px-4">
@@ -185,7 +213,9 @@ export default function StudentTable({ limit }) {
                           className="w-8 h-8 rounded-xl object-cover ring-1 ring-slate-700"
                         />
                         <div>
-                          <p className="font-bold text-slate-100 group-hover:text-blue-400 transition-colors">
+                          <p className={`font-bold transition-colors group-hover:text-blue-500 ${
+                            isDarkMode ? 'text-slate-100' : 'text-slate-900'
+                          }`}>
                             {student.name}
                           </p>
                           <p className="text-[10px] text-slate-400 font-mono">{student.id} • {student.email}</p>
@@ -194,13 +224,13 @@ export default function StudentTable({ limit }) {
                     </td>
 
                     {/* Login Time */}
-                    <td className="py-3 px-4 font-mono text-slate-300">
+                    <td className={`py-3 px-4 font-mono ${isDarkMode ? 'text-slate-300' : 'text-slate-700'}`}>
                       {student.loginTime}
                     </td>
 
                     {/* Task */}
                     <td className="py-3 px-4">
-                      <span className="font-medium text-slate-200 block truncate max-w-[180px]">
+                      <span className={`font-medium block truncate max-w-[180px] ${isDarkMode ? 'text-slate-200' : 'text-slate-800'}`}>
                         {student.assignedTask}
                       </span>
                     </td>
@@ -213,23 +243,66 @@ export default function StudentTable({ limit }) {
                       </span>
                     </td>
 
-                    {/* Remaining Time */}
+                    {/* Remaining Time & Edit */}
                     <td className="py-3 px-4 font-mono">
-                      <div className="flex items-center gap-1">
-                        <Clock className="w-3.5 h-3.5 text-slate-400" />
-                        {formatTimer(student.timerRemaining)}
-                      </div>
+                      {editingStudentId === student.id ? (
+                        <div className="flex items-center gap-1.5 bg-slate-800/80 p-1 rounded-xl border border-slate-700">
+                          <input
+                            type="number"
+                            min="0"
+                            max="600"
+                            value={studentEditMins}
+                            onChange={(e) => setStudentEditMins(Math.max(0, parseInt(e.target.value, 10) || 0))}
+                            className="w-12 py-0.5 px-1 rounded bg-black text-white text-center text-xs border border-slate-600 focus:outline-none focus:border-[#C3F53B]"
+                            title="Minutes"
+                          />
+                          <span className="text-[10px] text-slate-400">m</span>
+                          <button
+                            onClick={() => handleSaveStudentTimer(student.id)}
+                            className="p-1 rounded bg-[#C3F53B] text-black hover:bg-[#b0df32]"
+                            title="Save Timer"
+                          >
+                            <Check className="w-3 h-3" />
+                          </button>
+                          <button
+                            onClick={() => setEditingStudentId(null)}
+                            className="p-1 rounded bg-slate-700 text-slate-300 hover:bg-slate-600"
+                            title="Cancel"
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-1">
+                            <Clock className="w-3.5 h-3.5 text-slate-400" />
+                            {formatTimer(student.timerRemaining)}
+                          </div>
+                          <button
+                            onClick={() => {
+                              setEditingStudentId(student.id);
+                              setStudentEditMins(Math.floor((student.timerRemaining || 0) / 60));
+                            }}
+                            className={`p-1 rounded-lg opacity-60 group-hover:opacity-100 transition-all ${
+                              isDarkMode ? 'hover:bg-slate-800 text-slate-400 hover:text-[#C3F53B]' : 'hover:bg-slate-200 text-slate-600 hover:text-blue-600'
+                            }`}
+                            title="Adjust Student Timer"
+                          >
+                            <Edit3 className="w-3 h-3" />
+                          </button>
+                        </div>
+                      )}
                     </td>
 
                     {/* Submission */}
                     <td className="py-3 px-4">
-                      <span className={`px-2 py-0.5 rounded text-[10px] font-semibold ${student.submissionStatus === 'Submitted' ? 'bg-blue-500/10 text-blue-400' : 'bg-slate-800 text-slate-400'
-                        }`}>
+                      <span className={`px-2 py-0.5 rounded text-[10px] font-semibold ${student.submissionStatus === 'Submitted'
+                        ? 'bg-blue-500/10 text-blue-400'
+                        : isDarkMode ? 'bg-slate-800 text-slate-400' : 'bg-slate-100 text-slate-600 border border-slate-200'
+                      }`}>
                         {student.submissionStatus}
                       </span>
                     </td>
-
-                    
                   </tr>
                 ))
               )}
@@ -239,20 +312,26 @@ export default function StudentTable({ limit }) {
 
         {/* Pagination */}
         {!limit && totalPages > 1 && (
-          <div className="p-3 border-t border-slate-800/80 bg-slate-900/40 flex items-center justify-between text-xs text-slate-400">
+          <div className={`p-3 border-t flex items-center justify-between text-xs transition-colors ${
+            isDarkMode ? 'border-slate-800/80 bg-slate-900/40 text-slate-400' : 'border-slate-200 bg-slate-50 text-slate-600'
+          }`}>
             <span>Page {page} of {totalPages}</span>
             <div className="flex items-center gap-2">
               <button
                 disabled={page === 1}
                 onClick={() => setPage(p => Math.max(1, p - 1))}
-                className="px-3 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 disabled:opacity-50 text-slate-200"
+                className={`px-3 py-1 rounded-lg disabled:opacity-50 font-medium transition-colors ${
+                  isDarkMode ? 'bg-slate-800 hover:bg-slate-700 text-slate-200' : 'bg-white border border-slate-300 hover:bg-slate-100 text-slate-800'
+                }`}
               >
                 Previous
               </button>
               <button
                 disabled={page === totalPages}
                 onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-                className="px-3 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 disabled:opacity-50 text-slate-200"
+                className={`px-3 py-1 rounded-lg disabled:opacity-50 font-medium transition-colors ${
+                  isDarkMode ? 'bg-slate-800 hover:bg-slate-700 text-slate-200' : 'bg-white border border-slate-300 hover:bg-slate-100 text-slate-800'
+                }`}
               >
                 Next
               </button>
