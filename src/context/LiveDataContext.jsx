@@ -167,7 +167,7 @@ export const LiveDataProvider = ({ children }) => {
         const next = Math.max(0, prev - 1);
         try {
           localStorage.setItem('codesync_event_timer', next);
-        } catch (e) {}
+        } catch (e) { }
         return next;
       });
     }, 1000);
@@ -178,7 +178,7 @@ export const LiveDataProvider = ({ children }) => {
     try {
       localStorage.setItem('codesync_event_timer', eventTimeRemaining);
       localStorage.setItem('codesync_timer_running', isTimerRunning);
-    } catch (e) {}
+    } catch (e) { }
   }, [eventTimeRemaining, isTimerRunning]);
 
   const updateStudentTimer = (studentId, newTimerSeconds) => {
@@ -237,7 +237,7 @@ export const LiveDataProvider = ({ children }) => {
   const integrationPassedCount = students.filter(s => s.integrationPassed && !s.integrationPassed.startsWith("0")).length;
   const successfulDeployments = students.filter(s => s.deploymentStatus === "Live").length;
   const failedBuilds = students.filter(s => s.buildStatus === "Failed").length;
-  
+
   const overallCompletionPercentage = totalStudents > 0 ? Math.round(
     students.reduce((acc, curr) => acc + (curr.completionPercentage || 0), 0) / totalStudents
   ) : 0;
