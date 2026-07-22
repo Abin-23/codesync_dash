@@ -57,7 +57,7 @@ export default function SettingsPage() {
           </button>
         </div>
 
-        {/* Auto Refresh Toggle */}
+        {/* Auto Refresh Toggle
         <div className="p-4 rounded-2xl bg-slate-900/60 border border-slate-800 glass-panel flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-400">
@@ -74,7 +74,7 @@ export default function SettingsPage() {
           >
             <div className={`w-4 h-4 rounded-full bg-white transition-transform ${isLiveUpdating ? 'translate-x-6' : 'translate-x-0'}`} />
           </button>
-        </div>
+        </div> */}
 
         {/* Refresh Interval Dropdown */}
         <div className="p-4 rounded-2xl bg-slate-900/60 border border-slate-800 glass-panel flex items-center justify-between">
